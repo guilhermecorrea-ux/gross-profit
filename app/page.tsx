@@ -1,69 +1,153 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useMemo, useState } from "react";
+import { useDados } from "@/lib/storage";
+import { calcular, calcularReverso } from "@/lib/calc";
+import { SeletorProdutos } from "@/components/SeletorProdutos";
+import { PainelTaxas } from "@/components/PainelTaxas";
+import { PainelResultado } from "@/components/PainelResultado";
+import type { ItemCalculo } from "@/lib/types";
+
+export default function CalculadoraPage() {
+  const { produtos, canais, carregado, setCanais, restaurarPadroes } =
+    useDados();
+
+  const canal = canais[0];
+
+  const [itens, setItens] = useState<ItemCalculo[]>([]);
+  const [precoInput, setPrecoInput] = useState("");
+  const [modoReverso, setModoReverso] = useState(false);
+  const [margemAlvoInput, setMargemAlvoInput] = useState("20");
+
+  const preco = precoInput.trim() === "" ? 0 : Number(precoInput.replace(",", "."));
+  const margemAlvo =
+    margemAlvoInput.trim() === ""
+      ? 0
+      : Number(margemAlvoInput.replace(",", ".")) / 100;
+
+  function atualizarTaxas(taxasNovas: typeof canal.taxas) {
+    setCanais(
+      canais.map((c) => (c.id === canal.id ? { ...c, taxas: taxasNovas } : c))
+    );
+  }
+
+  const resultadoDireto = useMemo(
+    () => calcular({ preco, itens, taxas: canal.taxas }, produtos),
+    [preco, itens, canal.taxas, produtos]
+  );
+
+  const resultadoReverso = useMemo(
+    () => calcularReverso({ margemAlvo, itens, taxas: canal.taxas }, produtos),
+    [margemAlvo, itens, canal.taxas, produtos]
+  );
+
+  if (!carregado) {
+    return <p className="text-sm text-navy/50">Carregando…</p>;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="grid gap-8 lg:grid-cols-2">
+      <section className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-navy/80">
+            Canal
+          </label>
+          <select
+            value={canal.id}
+            disabled
+            className="mt-1 w-full rounded-md border border-navy/20 bg-navy/5 px-3 py-2 text-sm text-navy/70"
+          >
+            <option value={canal.id}>{canal.nome}</option>
+          </select>
+        </div>
+
+        <SeletorProdutos produtos={produtos} itens={itens} onChange={setItens} />
+
+        <div className="flex items-end gap-3">
+          <div className="flex-1">
+            {modoReverso ? (
+              <>
+                <label
+                  htmlFor="margem-alvo"
+                  className="block text-sm font-medium text-navy/80"
+                >
+                  Margem alvo (%)
+                </label>
+                <input
+                  id="margem-alvo"
+                  type="text"
+                  inputMode="decimal"
+                  value={margemAlvoInput}
+                  onChange={(e) => setMargemAlvoInput(e.target.value)}
+                  placeholder="20"
+                  className="mt-1 w-full rounded-md border border-navy/20 px-3 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja"
+                />
+              </>
+            ) : (
+              <>
+                <label
+                  htmlFor="preco"
+                  className="block text-sm font-medium text-navy/80"
+                >
+                  Preço de venda (R$)
+                </label>
+                <input
+                  id="preco"
+                  type="text"
+                  inputMode="decimal"
+                  value={precoInput}
+                  onChange={(e) => setPrecoInput(e.target.value)}
+                  placeholder="0,00"
+                  className="mt-1 w-full rounded-md border border-navy/20 px-3 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja"
+                />
+              </>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setModoReverso((v) => !v)}
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              modoReverso
+                ? "bg-laranja text-white"
+                : "border border-navy/20 text-navy hover:bg-navy/5"
+            }`}
+          >
+            Modo reverso
+          </button>
+        </div>
+
+        <PainelTaxas
+          taxas={canal.taxas}
+          onChange={atualizarTaxas}
+          onRestaurarPadroes={restaurarPadroes}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+      </section>
+
+      <section>
+        {modoReverso ? (
+          resultadoReverso.ok ? (
+            <PainelResultado
+              modoReverso
+              resultado={resultadoReverso.resultado}
+              precoIdeal={resultadoReverso.precoIdeal}
+              erro={null}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          ) : (
+            <PainelResultado
+              modoReverso
+              resultado={null}
+              precoIdeal={null}
+              erro={resultadoReverso.motivo}
+            />
+          )
+        ) : (
+          <PainelResultado
+            modoReverso={false}
+            resultado={resultadoDireto}
+            preco={preco}
+          />
+        )}
+      </section>
     </div>
   );
 }

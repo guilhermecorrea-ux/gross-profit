@@ -1,0 +1,147 @@
+import type { Produto } from "@/lib/types";
+
+const barrinhas: [string, string][] = [
+  ["barrinha-doce-de-leite-amendoas-12un", "Barrinha doce de leite e amêndoas 12un"],
+  ["barrinha-mix-sabores-12un", "Barrinha mix de sabores 12un"],
+  ["barrinha-choc-branco-frutas-vermelhas-12un", "Barrinha chocolate branco e frutas vermelhas 12un"],
+  ["barrinha-cookies-cream-12un", "Barrinha cookies & cream 12un"],
+  ["barrinha-avela-trufado-12un", "Barrinha avelã trufado 12un"],
+  ["barrinha-choc-duo-12un", "Barrinha chocolate duo 12un"],
+  ["barrinha-choc-50-12un", "Barrinha chocolate 50% 12un"],
+];
+
+export const produtosSeed: Produto[] = [
+  // Pastas 205g
+  {
+    id: "pasta-amendoim-choc-crocante-205g",
+    nome: "Pasta de amendoim chocolate crocante 205g",
+    categoria: "pasta-205g",
+    cmv: 7.0,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-caju-tradicional-205g",
+    nome: "Pasta de castanha caju tradicional 205g",
+    categoria: "pasta-205g",
+    cmv: 8.25,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-coco-205g",
+    nome: "Pasta de castanha sabor coco 205g",
+    categoria: "pasta-205g",
+    cmv: 8.75,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-choc52-205g",
+    nome: "Pasta de castanha sabor chocolate 52% 205g",
+    categoria: "pasta-205g",
+    cmv: 9.15,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-choc-branco-caramelo-205g",
+    nome: "Pasta de castanha chocolate branco e caramelo salgado 205g",
+    categoria: "pasta-205g",
+    cmv: 9.15,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-cookies-cream-205g",
+    nome: "Pasta de castanha cookies & cream 205g",
+    categoria: "pasta-205g",
+    cmv: 9.15,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-baunilha-crispies-205g",
+    nome: "Pasta de castanha baunilha crispies 205g",
+    categoria: "pasta-205g",
+    cmv: 9.25,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-pistache-205g",
+    nome: "Pasta de pistache 205g",
+    categoria: "pasta-205g",
+    cmv: 20.0,
+    ativo: true,
+    origem: "seed",
+  },
+  // Pastas 500g
+  {
+    id: "pasta-amendoim-choc-crocante-500g",
+    nome: "Pasta de amendoim chocolate crocante 500g",
+    categoria: "pasta-500g",
+    cmv: 12.25,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-choc52-500g",
+    nome: "Pasta de castanha sabor chocolate 52% 500g",
+    categoria: "pasta-500g",
+    cmv: 16.9,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-caju-tradicional-500g",
+    nome: "Pasta de castanha caju tradicional 500g",
+    categoria: "pasta-500g",
+    cmv: 17.36,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-coco-500g",
+    nome: "Pasta de castanha sabor coco 500g",
+    categoria: "pasta-500g",
+    cmv: 18.0,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-choc-branco-caramelo-500g",
+    nome: "Pasta de castanha chocolate branco e caramelo salgado 500g",
+    categoria: "pasta-500g",
+    cmv: 18.75,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-cookies-cream-500g",
+    nome: "Pasta de castanha cookies & cream 500g",
+    categoria: "pasta-500g",
+    cmv: 19.15,
+    ativo: true,
+    origem: "seed",
+  },
+  {
+    id: "pasta-castanha-baunilha-crispies-500g",
+    nome: "Pasta de castanha baunilha crispies 500g",
+    categoria: "pasta-500g",
+    cmv: 19.5,
+    ativo: true,
+    origem: "seed",
+  },
+  // Barrinhas de proteína — caixa 12un, todas R$ 58,00
+  ...barrinhas.map(
+    ([id, nome]): Produto => ({
+      id,
+      nome,
+      categoria: "barrinha",
+      cmv: 58.0,
+      ativo: true,
+      origem: "seed",
+    })
+  ),
+];
