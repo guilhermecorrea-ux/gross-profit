@@ -11,6 +11,7 @@ const PALETA_SABOR_TAIL = ["#EC338F", "#CB8964"];
 
 const ABAS = [
   { href: "/", label: "Calculadora" },
+  { href: "/precificacao", label: "Precificação" },
   { href: "/custos", label: "Custos & produtos" },
 ] as const;
 

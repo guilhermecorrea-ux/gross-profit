@@ -121,7 +121,7 @@ export default function CustosPage() {
   return (
     <div
       data-theme={dark ? "dark" : "light"}
-      className="grid min-h-screen w-full grid-cols-1 gap-8 bg-[#F6F4EC] px-6 pt-7 pb-12 dark:bg-[#14140F] lg:px-14"
+      className="grid min-h-screen w-full grid-cols-1 content-start gap-8 bg-[#F6F4EC] px-6 pt-7 pb-12 dark:bg-[#14140F] lg:px-14"
     >
       <Cabecalho
         titulo="Custos & Produtos"

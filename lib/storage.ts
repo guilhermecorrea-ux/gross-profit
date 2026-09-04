@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { produtosSeed } from "@/data/produtos.seed";
 import { canaisSeed } from "@/data/canais.seed";
-import type { Canal, ItemCalculo, Produto, Taxa } from "./types";
+import type { Canal, ItemCalculo, Precificacao, Produto, Taxa } from "./types";
 
 export const STORAGE_KEYS = {
   produtos: "vitanuts-calc:produtos:v1",
   canais: "vitanuts-calc:canais:v1",
   sessaoCalculo: "vitanuts-calc:sessao-calculo:v1",
+  precificacoes: "vitanuts-calc:precificacoes:v1",
 } as const;
 
 function lerChave<T>(chave: string): T | null {
@@ -226,4 +227,37 @@ export function useSessaoCalculo() {
       atualizar({ margemAlvoInput }),
     carregado,
   };
+}
+
+// Histórico de produtos precificados: cada linha é um "snapshot" salvo a
+// partir da calculadora (botão "Salvar em Precificação"), exibido na aba
+// Precificação. Persistido em localStorage como o resto do app.
+export function usePrecificacoes() {
+  const [precificacoes, setPrecificacoesState] = useState<Precificacao[]>([]);
+  const [carregado, setCarregado] = useState(false);
+
+  useEffect(() => {
+    const salvas = lerChave<Precificacao[]>(STORAGE_KEYS.precificacoes);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (salvas) setPrecificacoesState(salvas);
+    setCarregado(true);
+  }, []);
+
+  function adicionar(precificacao: Precificacao) {
+    setPrecificacoesState((atual) => {
+      const nova = [precificacao, ...atual];
+      escreverChave(STORAGE_KEYS.precificacoes, nova);
+      return nova;
+    });
+  }
+
+  function remover(id: string) {
+    setPrecificacoesState((atual) => {
+      const nova = atual.filter((p) => p.id !== id);
+      escreverChave(STORAGE_KEYS.precificacoes, nova);
+      return nova;
+    });
+  }
+
+  return { precificacoes, carregado, adicionar, remover };
 }

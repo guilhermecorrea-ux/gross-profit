@@ -71,3 +71,12 @@ export type ResultadoCalculoReverso =
       ok: false;
       motivo: string;
     };
+
+export type Precificacao = {
+  id: string;
+  nome: string;
+  canal: string;
+  preco: number;
+  resultado: ResultadoCalculo;
+  criadoEm: string;
+};

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useDados, useSessaoCalculo } from "@/lib/storage";
+import { useDados, usePrecificacoes, useSessaoCalculo } from "@/lib/storage";
 import { useTema } from "@/lib/tema";
 import { calcular, calcularReverso } from "@/lib/calc";
 import {
@@ -49,7 +49,9 @@ export default function CalculadoraPage() {
     setMargemAlvoInput,
     carregado: sessaoCarregada,
   } = useSessaoCalculo();
+  const { adicionar: adicionarPrecificacao } = usePrecificacoes();
   const [busca, setBusca] = useState("");
+  const [salvo, setSalvo] = useState(false);
 
   const produtosAtivos = useMemo(
     () => produtos.filter((p) => p.ativo),
@@ -128,6 +130,27 @@ export default function CalculadoraPage() {
       : 0
     : preco;
 
+  function salvarEmPrecificacao() {
+    if (!resultadoAtivo) return;
+    const nomeProduto =
+      itens
+        .map((i) => produtoPorId.get(i.produtoId)?.nome)
+        .filter((nome): nome is string => Boolean(nome))
+        .join(" + ") || "Sem produto";
+
+    adicionarPrecificacao({
+      id: crypto.randomUUID(),
+      nome: nomeProduto,
+      canal: canal.nome,
+      preco: precoEfetivo,
+      resultado: resultadoAtivo,
+      criadoEm: new Date().toISOString(),
+    });
+
+    setSalvo(true);
+    setTimeout(() => setSalvo(false), 2000);
+  }
+
   if (!carregado || !sessaoCarregada) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F6F4EC] dark:bg-[#14140F]">
@@ -159,7 +182,7 @@ export default function CalculadoraPage() {
   return (
     <div
       data-theme={dark ? "dark" : "light"}
-      className="grid min-h-screen w-full grid-cols-1 gap-8 bg-[#F6F4EC] px-6 pt-7 pb-12 dark:bg-[#14140F] lg:grid-cols-[380px_1fr] lg:gap-16 lg:px-14"
+      className="grid min-h-screen w-full grid-cols-1 content-start gap-8 bg-[#F6F4EC] px-6 pt-7 pb-12 dark:bg-[#14140F] lg:grid-cols-[380px_1fr] lg:gap-16 lg:px-14"
     >
       <Cabecalho
         titulo="Gross Profit Calculator"
@@ -330,6 +353,15 @@ export default function CalculadoraPage() {
           onChange={atualizarTaxas}
           onRestaurarPadroes={restaurarPadroes}
         />
+
+        <button
+          type="button"
+          onClick={salvarEmPrecificacao}
+          disabled={!resultadoAtivo}
+          className="rounded-[15px] bg-laranja px-4 py-2.5 text-sm font-bold text-white hover:bg-laranja-escuro disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {salvo ? "Adicionado à Precificação ✓" : "Salvar em Precificação"}
+        </button>
       </div>
 
       <div className="flex flex-col gap-10 rounded-[15px] bg-white p-8 dark:bg-[#1F1F19]">
