@@ -147,6 +147,8 @@ export default function CalculadoraPage() {
       criadoEm: new Date().toISOString(),
     });
 
+    new Audio("/sounds/cash-drop.mp3").play().catch(() => {});
+
     setSalvo(true);
     setTimeout(() => setSalvo(false), 2000);
   }
