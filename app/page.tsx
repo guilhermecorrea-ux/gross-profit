@@ -14,6 +14,7 @@ import { corDaMargem } from "@/lib/constants";
 import { archivo } from "@/lib/fonts";
 import { Cabecalho } from "@/components/Cabecalho";
 import { PainelTaxas } from "@/components/PainelTaxas";
+import { tocarSomDinheiro } from "@/lib/som";
 
 const CORES_BARRA = ["#FBD9C4", "#F5B48C", "#EF8F55", "#ED7032", "#B84C13"];
 
@@ -146,6 +147,8 @@ export default function CalculadoraPage() {
       resultado: resultadoAtivo,
       criadoEm: new Date().toISOString(),
     });
+
+    tocarSomDinheiro();
 
     setSalvo(true);
     setTimeout(() => setSalvo(false), 2000);
