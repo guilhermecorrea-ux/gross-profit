@@ -4,10 +4,19 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { usePrecificacoes } from "@/lib/storage";
 import { useTema } from "@/lib/tema";
-import { formatarBRL, formatarMarkup, formatarPercentual } from "@/lib/format";
+import { recalcularComLinhaAtualizada } from "@/lib/calc";
+import {
+  formatarBRL,
+  formatarMarkup,
+  formatarPercentual,
+  parseNumeroBR,
+} from "@/lib/format";
 import { corDaMargem } from "@/lib/constants";
 import { archivo } from "@/lib/fonts";
 import { Cabecalho } from "@/components/Cabecalho";
+import type { Precificacao } from "@/lib/types";
+
+const NOME_LINHA_FRETE = "Custo de frete";
 
 const COR_MARGEM_TEXTO: Record<string, string> = {
   vermelho: "text-laranja-escuro",
@@ -25,7 +34,29 @@ function formatarData(iso: string): string {
 
 export default function PrecificacaoPage() {
   const { dark } = useTema();
-  const { precificacoes, carregado, remover } = usePrecificacoes();
+  const { precificacoes, carregado, remover, editarResultado } =
+    usePrecificacoes();
+
+  function editarFrete(p: Precificacao) {
+    const linhaFrete = p.resultado.linhas.find(
+      (l) => l.nome === NOME_LINHA_FRETE
+    );
+    const valorAtual = linhaFrete?.valorReais ?? 0;
+    const entrada = window.prompt(
+      "Novo custo de frete (R$):",
+      valorAtual.toFixed(2).replace(".", ",")
+    );
+    if (entrada === null) return;
+
+    const novoValor = parseNumeroBR(entrada);
+    const novoResultado = recalcularComLinhaAtualizada(
+      p.resultado,
+      p.preco,
+      NOME_LINHA_FRETE,
+      novoValor
+    );
+    editarResultado(p.id, novoResultado);
+  }
 
   const nomesLinhas = useMemo(() => {
     const vistos = new Set<string>();
@@ -157,7 +188,18 @@ export default function PrecificacaoPage() {
                       <td className="px-3 py-2 whitespace-nowrap text-[#2C2E35]/50 dark:text-[#F2EFE4]/50">
                         {formatarData(p.criadoEm)}
                       </td>
-                      <td className="px-3 py-2 text-right">
+                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => editarFrete(p)}
+                          aria-label={`Editar frete de ${p.nome}`}
+                          className="text-xs text-[#2C2E35]/60 hover:underline dark:text-[#F2EFE4]/60"
+                        >
+                          Editar frete
+                        </button>
+                        <span className="mx-1.5 text-[#2C2E35]/20 dark:text-[#F2EFE4]/20">
+                          ·
+                        </span>
                         <button
                           type="button"
                           onClick={() => remover(p.id)}

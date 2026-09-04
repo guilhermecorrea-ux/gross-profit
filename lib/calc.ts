@@ -83,3 +83,32 @@ export function calcularReverso(
 
   return { ok: true, precoIdeal, resultado };
 }
+
+// Atualiza uma única linha de custo já calculada (ex.: o frete de uma
+// precificação salva) e recalcula custo total, lucro e margem a partir
+// dela — sem precisar reprocessar itens/taxas do zero. O markup não muda,
+// pois depende só do CMV e do preço.
+export function recalcularComLinhaAtualizada(
+  resultado: ResultadoCalculo,
+  preco: number,
+  nomeLinha: string,
+  novoValor: number
+): ResultadoCalculo {
+  const linhaExistente = resultado.linhas.find((l) => l.nome === nomeLinha);
+  const valorAntigo = linhaExistente?.valorReais ?? 0;
+  const percentualDoPreco = preco > 0 ? novoValor / preco : 0;
+
+  const linhas = linhaExistente
+    ? resultado.linhas.map((l) =>
+        l.nome === nomeLinha
+          ? { ...l, valorReais: novoValor, percentualDoPreco }
+          : l
+      )
+    : [...resultado.linhas, { nome: nomeLinha, valorReais: novoValor, percentualDoPreco }];
+
+  const custoTotal = resultado.custoTotal - valorAntigo + novoValor;
+  const lucro = preco - custoTotal;
+  const margem = preco === 0 ? NaN : lucro / preco;
+
+  return { ...resultado, linhas, custoTotal, lucro, margem };
+}

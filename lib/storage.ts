@@ -259,5 +259,13 @@ export function usePrecificacoes() {
     });
   }
 
-  return { precificacoes, carregado, adicionar, remover };
+  function editarResultado(id: string, resultado: Precificacao["resultado"]) {
+    setPrecificacoesState((atual) => {
+      const nova = atual.map((p) => (p.id === id ? { ...p, resultado } : p));
+      escreverChave(STORAGE_KEYS.precificacoes, nova);
+      return nova;
+    });
+  }
+
+  return { precificacoes, carregado, adicionar, remover, editarResultado };
 }
