@@ -28,6 +28,11 @@ export function formatarMarkup(markup: number | null): string {
   return `${formatadorMarkup.format(markup)}x`;
 }
 
+export function parseNumeroBR(texto: string): number {
+  const valor = parseFloat(texto.replace(/\./g, "").replace(",", "."));
+  return Number.isFinite(valor) ? valor : 0;
+}
+
 export function slugify(texto: string): string {
   return texto
     .normalize("NFD")
