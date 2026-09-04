@@ -28,33 +28,35 @@ export function TabelaProdutos({ produtos, onChange }: Props) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-navy/10">
+    <div className="overflow-hidden rounded-[15px] border border-[#2C2E35]/10 dark:border-[#F2EFE4]/10">
       <table className="w-full text-sm">
-        <thead className="bg-navy/5 text-left text-xs uppercase tracking-wide text-navy/50">
+        <thead className="bg-[#2C2E35]/5 text-left text-[11px] tracking-wide text-[#2C2E35]/50 uppercase dark:bg-[#F2EFE4]/5 dark:text-[#F2EFE4]/50">
           <tr>
-            <th className="px-3 py-2 font-medium">Produto</th>
-            <th className="px-3 py-2 font-medium">Categoria</th>
-            <th className="px-3 py-2 font-medium">CMV (R$)</th>
-            <th className="px-3 py-2 font-medium">Ativo</th>
-            <th className="px-3 py-2 font-medium" />
+            <th className="px-3 py-2 font-semibold">Produto</th>
+            <th className="px-3 py-2 font-semibold">Categoria</th>
+            <th className="px-3 py-2 font-semibold">CMV (R$)</th>
+            <th className="px-3 py-2 font-semibold">Ativo</th>
+            <th className="px-3 py-2 font-semibold" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-navy/10">
+        <tbody className="divide-y divide-[#2C2E35]/10 dark:divide-[#F2EFE4]/10">
           {produtos.map((produto) => {
             const categoriaLabel =
               CATEGORIAS.find((c) => c.id === produto.categoria)?.label ??
               produto.categoria;
             return (
               <tr key={produto.id} className={produto.ativo ? "" : "opacity-50"}>
-                <td className="px-3 py-2 text-navy">
+                <td className="px-3 py-2 text-[#2C2E35] dark:text-[#F2EFE4]">
                   {produto.nome}
                   {produto.origem === "custom" && (
-                    <span className="ml-2 rounded-full bg-navy/10 px-2 py-0.5 text-xs text-navy/60">
+                    <span className="ml-2 rounded-full bg-[#2C2E35]/10 px-2 py-0.5 text-xs text-[#2C2E35]/60 dark:bg-[#F2EFE4]/10 dark:text-[#F2EFE4]/60">
                       custom
                     </span>
                   )}
                 </td>
-                <td className="px-3 py-2 text-navy/60">{categoriaLabel}</td>
+                <td className="px-3 py-2 text-[#2C2E35]/60 dark:text-[#F2EFE4]/60">
+                  {categoriaLabel}
+                </td>
                 <td className="px-3 py-2">
                   <input
                     type="number"
@@ -64,7 +66,7 @@ export function TabelaProdutos({ produtos, onChange }: Props) {
                     onChange={(e) =>
                       atualizarCmv(produto.id, Number(e.target.value))
                     }
-                    className="w-24 rounded-md border border-navy/20 px-2 py-1 text-right text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja"
+                    className="w-24 rounded-[15px] border border-[#2C2E35]/20 bg-white px-2 py-1 text-right text-sm tabular-nums text-[#2C2E35] outline-none focus:border-laranja focus:ring-1 focus:ring-laranja dark:border-[#F2EFE4]/20 dark:bg-[#1F1F19] dark:text-[#F2EFE4]"
                   />
                 </td>
                 <td className="px-3 py-2">
@@ -74,7 +76,7 @@ export function TabelaProdutos({ produtos, onChange }: Props) {
                     className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                       produto.ativo
                         ? "bg-verde/15 text-verde"
-                        : "bg-navy/10 text-navy/50"
+                        : "bg-[#2C2E35]/10 text-[#2C2E35]/50 dark:bg-[#F2EFE4]/10 dark:text-[#F2EFE4]/50"
                     }`}
                   >
                     {produto.ativo ? "Ativo" : "Inativo"}

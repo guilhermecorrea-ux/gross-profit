@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useDados } from "@/lib/storage";
+import { useTema } from "@/lib/tema";
 import { calcular, calcularReverso } from "@/lib/calc";
 import {
   formatarBRL,
@@ -12,9 +12,9 @@ import {
 } from "@/lib/format";
 import { corDaMargem } from "@/lib/constants";
 import { archivo } from "@/lib/fonts";
+import { Cabecalho } from "@/components/Cabecalho";
+import { PainelTaxas } from "@/components/PainelTaxas";
 import type { ItemCalculo } from "@/lib/types";
-
-const TEMA_STORAGE_KEY = "vitanuts-calc:tema";
 
 const CORES_BARRA = ["#FBD9C4", "#F5B48C", "#EF8F55", "#ED7032", "#B84C13"];
 
@@ -37,26 +37,13 @@ export default function CalculadoraPage() {
     useDados();
 
   const canal = canais[0];
+  const { dark } = useTema();
 
-  const [dark, setDark] = useState(false);
   const [itens, setItens] = useState<ItemCalculo[]>([]);
   const [busca, setBusca] = useState("");
   const [precoInput, setPrecoInput] = useState("");
   const [modoReverso, setModoReverso] = useState(false);
   const [margemAlvoInput, setMargemAlvoInput] = useState("20");
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (window.localStorage.getItem(TEMA_STORAGE_KEY) === "dark") setDark(true);
-  }, []);
-
-  function alternarTema() {
-    setDark((atual) => {
-      const novo = !atual;
-      window.localStorage.setItem(TEMA_STORAGE_KEY, novo ? "dark" : "light");
-      return novo;
-    });
-  }
 
   const produtosAtivos = useMemo(
     () => produtos.filter((p) => p.ativo),
@@ -135,16 +122,6 @@ export default function CalculadoraPage() {
       : 0
     : preco;
 
-  const paletaSabor = [
-    "#ED7032",
-    "#F5BA54",
-    "#BACC82",
-    "#519BB4",
-    dark ? "#B56C76" : "#6E1F44",
-    "#EC338F",
-    "#CB8964",
-  ];
-
   if (!carregado) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F6F4EC] dark:bg-[#14140F]">
@@ -178,50 +155,10 @@ export default function CalculadoraPage() {
       data-theme={dark ? "dark" : "light"}
       className="grid min-h-screen w-full grid-cols-1 gap-8 bg-[#F6F4EC] px-6 pt-7 pb-12 dark:bg-[#14140F] lg:grid-cols-[380px_1fr] lg:gap-16 lg:px-14"
     >
-      <div className="col-span-full flex items-start justify-between gap-8">
-        <div>
-          <p className="mb-3.5 text-sm font-semibold tracking-wide text-laranja">
-            VITANUTS
-          </p>
-          <h1
-            className={`${archivo.className} text-[32px] font-black leading-none tracking-[-1.2px] text-[#2C2E35] sm:text-[40px] dark:text-[#F2EFE4]`}
-          >
-            Gross Profit Calculator
-          </h1>
-          <p className="mt-2 text-sm font-semibold text-[#2C2E35]/55 dark:text-[#F2EFE4]/55">
-            A vida não para. E a gente também não precisa.
-          </p>
-        </div>
-        <div className="flex flex-col items-end gap-3.5">
-          <div className="flex items-center gap-2">
-            <Link
-              href="/custos"
-              className="rounded-[15px] border border-[#2C2E35]/25 px-4 py-2 text-xs font-bold tracking-wide text-[#2C2E35] hover:bg-[#2C2E35]/5 dark:border-[#F2EFE4]/25 dark:text-[#F2EFE4] dark:hover:bg-[#F2EFE4]/10"
-            >
-              Custos &amp; produtos
-            </Link>
-            <button
-              type="button"
-              onClick={alternarTema}
-              className="rounded-[15px] border border-[#2C2E35]/25 px-4 py-2 text-xs font-bold tracking-wide text-[#2C2E35] hover:bg-[#2C2E35]/5 dark:border-[#F2EFE4]/25 dark:text-[#F2EFE4] dark:hover:bg-[#F2EFE4]/10"
-            >
-              {dark ? "Tema claro" : "Tema escuro"}
-            </button>
-          </div>
-          <div className="flex gap-1.5">
-            {paletaSabor.map((cor, i) => (
-              <span
-                key={i}
-                className="inline-block h-[15px] w-[15px] rounded-full"
-                style={{ background: cor }}
-              />
-            ))}
-          </div>
-          <div className="text-[10px] font-semibold tracking-widest text-[#2C2E35]/40 uppercase dark:text-[#F2EFE4]/40">
-            Linguagem de sabor
-          </div>
-        </div>
-      </div>
+      <Cabecalho
+        titulo="Gross Profit Calculator"
+        subtitulo="A vida não para. E a gente também não precisa."
+      />
 
       <div className="flex flex-col gap-7">
         <div>
@@ -382,67 +319,11 @@ export default function CalculadoraPage() {
           </div>
         </div>
 
-        <div>
-          <div className="mb-1.5 flex items-baseline justify-between">
-            <div className="text-[11px] font-semibold tracking-wide text-[#2C2E35]/50 uppercase dark:text-[#F2EFE4]/50">
-              Taxas do canal
-            </div>
-            <button
-              type="button"
-              onClick={restaurarPadroes}
-              className="text-[11px] text-[#2C2E35]/45 underline hover:text-laranja-escuro dark:text-[#F2EFE4]/45"
-            >
-              restaurar padrões
-            </button>
-          </div>
-
-          {canal.taxas.map((taxa) => (
-            <div
-              key={taxa.id}
-              className="flex items-center justify-between border-b border-[#2C2E35]/10 py-2 last:border-b-0 dark:border-[#F2EFE4]/10"
-            >
-              <span className="text-[13px] text-[#2C2E35] dark:text-[#F2EFE4]">
-                {taxa.nome}
-              </span>
-              <div className="flex items-baseline gap-0.5">
-                {taxa.tipo === "fixo" && (
-                  <span className="text-[13px] text-[#2C2E35] dark:text-[#F2EFE4]">
-                    R$
-                  </span>
-                )}
-                <input
-                  type="number"
-                  step="0.01"
-                  min={0}
-                  disabled={!taxa.editavel}
-                  value={taxa.valor}
-                  onChange={(e) =>
-                    atualizarTaxas(
-                      canal.taxas.map((t) =>
-                        t.id === taxa.id
-                          ? {
-                              ...t,
-                              valor: Number.isFinite(Number(e.target.value))
-                                ? Number(e.target.value)
-                                : 0,
-                            }
-                          : t
-                      )
-                    )
-                  }
-                  className={`border-0 border-b border-dashed border-[#2C2E35]/30 bg-transparent py-0.5 text-right text-[13px] font-semibold text-[#2C2E35] outline-none tabular-nums dark:border-[#F2EFE4]/30 dark:text-[#F2EFE4] ${
-                    taxa.tipo === "fixo" ? "w-12" : "w-8"
-                  }`}
-                />
-                {taxa.tipo === "percentual" && (
-                  <span className="text-[13px] text-[#2C2E35] dark:text-[#F2EFE4]">
-                    %
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <PainelTaxas
+          taxas={canal.taxas}
+          onChange={atualizarTaxas}
+          onRestaurarPadroes={restaurarPadroes}
+        />
       </div>
 
       <div className="flex flex-col gap-10 rounded-[15px] bg-white p-8 dark:bg-[#1F1F19]">

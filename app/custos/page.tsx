@@ -2,14 +2,24 @@
 
 import { useRef, useState } from "react";
 import { useDados } from "@/lib/storage";
+import { useTema } from "@/lib/tema";
 import { exportarJSON, importarJSON } from "@/lib/storage";
 import { slugify } from "@/lib/format";
 import { CATEGORIAS } from "@/lib/constants";
+import { archivo } from "@/lib/fonts";
+import { Cabecalho } from "@/components/Cabecalho";
 import { TabelaProdutos } from "@/components/TabelaProdutos";
 import { PainelTaxas } from "@/components/PainelTaxas";
 import type { Categoria, Produto } from "@/lib/types";
 
+const BOTAO_FANTASMA =
+  "rounded-[15px] border border-[#2C2E35]/25 px-3.5 py-2 text-sm font-semibold text-[#2C2E35] hover:bg-[#2C2E35]/5 dark:border-[#F2EFE4]/25 dark:text-[#F2EFE4] dark:hover:bg-[#F2EFE4]/10";
+
+const CAMPO =
+  "rounded-[15px] border border-[#2C2E35]/20 bg-white px-3 py-2 text-sm text-[#2C2E35] outline-none focus:border-laranja focus:ring-1 focus:ring-laranja dark:border-[#F2EFE4]/20 dark:bg-[#1F1F19] dark:text-[#F2EFE4]";
+
 export default function CustosPage() {
+  const { dark } = useTema();
   const {
     produtos,
     canais,
@@ -99,26 +109,40 @@ export default function CustosPage() {
   }
 
   if (!carregado) {
-    return <p className="text-sm text-navy/50">Carregando…</p>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F6F4EC] dark:bg-[#14140F]">
+        <p className="text-sm text-[#2C2E35]/50 dark:text-[#F2EFE4]/50">
+          Carregando…
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-10">
-      <section className="space-y-4">
+    <div
+      data-theme={dark ? "dark" : "light"}
+      className="grid min-h-screen w-full grid-cols-1 gap-8 bg-[#F6F4EC] px-6 pt-7 pb-12 dark:bg-[#14140F] lg:px-14"
+    >
+      <Cabecalho
+        titulo="Custos & Produtos"
+        subtitulo="Catálogo de produtos e taxas padrão por canal."
+      />
+
+      <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-navy">Produtos</h2>
+          <h2
+            className={`${archivo.className} text-lg font-extrabold text-[#2C2E35] dark:text-[#F2EFE4]`}
+          >
+            Produtos
+          </h2>
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={exportar}
-              className="rounded-md border border-navy/20 px-3 py-1.5 text-sm text-navy hover:bg-navy/5"
-            >
+            <button type="button" onClick={exportar} className={BOTAO_FANTASMA}>
               Exportar JSON
             </button>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="rounded-md border border-navy/20 px-3 py-1.5 text-sm text-navy hover:bg-navy/5"
+              className={BOTAO_FANTASMA}
             >
               Importar JSON
             </button>
@@ -132,13 +156,15 @@ export default function CustosPage() {
           </div>
         </div>
         {mensagemImportacao && (
-          <p className="text-sm text-navy/60">{mensagemImportacao}</p>
+          <p className="text-sm text-[#2C2E35]/60 dark:text-[#F2EFE4]/60">
+            {mensagemImportacao}
+          </p>
         )}
 
         <TabelaProdutos produtos={produtos} onChange={setProdutos} />
 
-        <div className="rounded-lg border border-navy/10 bg-white p-4">
-          <h3 className="text-sm font-semibold text-navy">
+        <div className="rounded-[15px] bg-white p-4 dark:bg-[#1F1F19]">
+          <h3 className="text-sm font-semibold text-[#2C2E35] dark:text-[#F2EFE4]">
             Adicionar produto
           </h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-[2fr_1fr_1fr_auto]">
@@ -147,12 +173,12 @@ export default function CustosPage() {
               placeholder="Nome do produto"
               value={novoNome}
               onChange={(e) => setNovoNome(e.target.value)}
-              className="rounded-md border border-navy/20 px-3 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja"
+              className={CAMPO}
             />
             <select
               value={novaCategoria}
               onChange={(e) => setNovaCategoria(e.target.value as Categoria)}
-              className="rounded-md border border-navy/20 px-3 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja"
+              className={CAMPO}
             >
               {CATEGORIAS.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -166,12 +192,12 @@ export default function CustosPage() {
               placeholder="CMV (R$)"
               value={novoCmv}
               onChange={(e) => setNovoCmv(e.target.value)}
-              className="rounded-md border border-navy/20 px-3 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja"
+              className={CAMPO}
             />
             <button
               type="button"
               onClick={adicionarProduto}
-              className="rounded-md bg-laranja px-4 py-2 text-sm font-medium text-white hover:bg-laranja-escuro"
+              className="rounded-[15px] bg-laranja px-4 py-2 text-sm font-bold text-white hover:bg-laranja-escuro"
             >
               Adicionar
             </button>
@@ -179,8 +205,10 @@ export default function CustosPage() {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-navy">
+      <section className="flex flex-col gap-4">
+        <h2
+          className={`${archivo.className} text-lg font-extrabold text-[#2C2E35] dark:text-[#F2EFE4]`}
+        >
           Percentuais padrão — {canal.nome}
         </h2>
         <PainelTaxas
@@ -190,11 +218,11 @@ export default function CustosPage() {
         />
       </section>
 
-      <section>
+      <section className="pb-4">
         <button
           type="button"
           onClick={restaurarComConfirmacao}
-          className="rounded-md border border-laranja-escuro/30 px-4 py-2 text-sm font-medium text-laranja-escuro hover:bg-laranja-escuro/5"
+          className="rounded-[15px] border border-laranja-escuro/30 px-4 py-2 text-sm font-semibold text-laranja-escuro hover:bg-laranja-escuro/5"
         >
           Restaurar padrões de fábrica
         </button>

@@ -11,64 +11,61 @@ type Props = {
 export function PainelTaxas({ taxas, onChange, onRestaurarPadroes }: Props) {
   function atualizarValor(id: string, valor: number) {
     onChange(
-      taxas.map((t) => (t.id === id ? { ...t, valor: Number.isFinite(valor) ? valor : 0 } : t))
+      taxas.map((t) =>
+        t.id === id ? { ...t, valor: Number.isFinite(valor) ? valor : 0 } : t
+      )
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-navy/80">
+    <div>
+      <div className="mb-1.5 flex items-baseline justify-between">
+        <div className="text-[11px] font-semibold tracking-wide text-[#2C2E35]/50 uppercase dark:text-[#F2EFE4]/50">
           Taxas do canal
-        </label>
+        </div>
         <button
           type="button"
           onClick={onRestaurarPadroes}
-          className="text-xs text-navy/50 underline decoration-dotted hover:text-laranja-escuro"
+          className="text-[11px] text-[#2C2E35]/45 underline hover:text-laranja-escuro dark:text-[#F2EFE4]/45"
         >
           restaurar padrões
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {taxas.map((taxa) => (
-          <div key={taxa.id}>
-            <label
-              htmlFor={`taxa-${taxa.id}`}
-              className="block text-xs text-navy/60"
-            >
-              {taxa.nome}
-            </label>
-            <div className="relative mt-1">
-              {taxa.tipo === "fixo" && (
-                <span className="pointer-events-none absolute inset-y-0 left-2 flex items-center text-sm text-navy/40">
-                  R$
-                </span>
-              )}
-              <input
-                id={`taxa-${taxa.id}`}
-                type="number"
-                step="0.01"
-                min={0}
-                disabled={!taxa.editavel}
-                value={taxa.valor}
-                onChange={(e) =>
-                  atualizarValor(taxa.id, Number(e.target.value))
-                }
-                placeholder={taxa.tipo === "fixo" ? "0,00" : "0"}
-                className={`w-full rounded-md border border-navy/20 py-1.5 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja disabled:bg-navy/5 ${
-                  taxa.tipo === "fixo" ? "pl-8 pr-2" : "pl-2 pr-6"
-                }`}
-              />
-              {taxa.tipo === "percentual" && (
-                <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-sm text-navy/40">
-                  %
-                </span>
-              )}
-            </div>
+      {taxas.map((taxa) => (
+        <div
+          key={taxa.id}
+          className="flex items-center justify-between border-b border-[#2C2E35]/10 py-2 last:border-b-0 dark:border-[#F2EFE4]/10"
+        >
+          <span className="text-[13px] text-[#2C2E35] dark:text-[#F2EFE4]">
+            {taxa.nome}
+          </span>
+          <div className="flex items-baseline gap-0.5">
+            {taxa.tipo === "fixo" && (
+              <span className="text-[13px] text-[#2C2E35] dark:text-[#F2EFE4]">
+                R$
+              </span>
+            )}
+            <input
+              id={`taxa-${taxa.id}`}
+              type="number"
+              step="0.01"
+              min={0}
+              disabled={!taxa.editavel}
+              value={taxa.valor}
+              onChange={(e) => atualizarValor(taxa.id, Number(e.target.value))}
+              className={`border-0 border-b border-dashed border-[#2C2E35]/30 bg-transparent py-0.5 text-right text-[13px] font-semibold text-[#2C2E35] outline-none tabular-nums disabled:opacity-50 dark:border-[#F2EFE4]/30 dark:text-[#F2EFE4] ${
+                taxa.tipo === "fixo" ? "w-12" : "w-8"
+              }`}
+            />
+            {taxa.tipo === "percentual" && (
+              <span className="text-[13px] text-[#2C2E35] dark:text-[#F2EFE4]">
+                %
+              </span>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 }
