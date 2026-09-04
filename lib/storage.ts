@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { produtosSeed } from "@/data/produtos.seed";
 import { canaisSeed } from "@/data/canais.seed";
-import type { Canal, Produto, Taxa } from "./types";
+import type { Canal, ItemCalculo, Produto, Taxa } from "./types";
 
 export const STORAGE_KEYS = {
   produtos: "vitanuts-calc:produtos:v1",
   canais: "vitanuts-calc:canais:v1",
+  sessaoCalculo: "vitanuts-calc:sessao-calculo:v1",
 } as const;
 
 function lerChave<T>(chave: string): T | null {
@@ -172,5 +173,57 @@ export function useDados() {
     setProdutos,
     setCanais,
     restaurarPadroes,
+  };
+}
+
+type SessaoCalculo = {
+  itens: ItemCalculo[];
+  precoInput: string;
+  modoReverso: boolean;
+  margemAlvoInput: string;
+};
+
+const SESSAO_CALCULO_PADRAO: SessaoCalculo = {
+  itens: [],
+  precoInput: "",
+  modoReverso: false,
+  margemAlvoInput: "20",
+};
+
+// Estado de trabalho da calculadora (produtos do kit, preço, modo reverso,
+// margem alvo): persistido em localStorage para sobreviver à navegação
+// entre páginas, que desmonta o componente e perderia esse estado local.
+export function useSessaoCalculo() {
+  const [sessao, setSessaoState] = useState<SessaoCalculo>(
+    SESSAO_CALCULO_PADRAO
+  );
+  const [carregado, setCarregado] = useState(false);
+
+  useEffect(() => {
+    const salva = lerChave<SessaoCalculo>(STORAGE_KEYS.sessaoCalculo);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (salva) setSessaoState({ ...SESSAO_CALCULO_PADRAO, ...salva });
+    setCarregado(true);
+  }, []);
+
+  function atualizar(patch: Partial<SessaoCalculo>) {
+    setSessaoState((atual) => {
+      const nova = { ...atual, ...patch };
+      escreverChave(STORAGE_KEYS.sessaoCalculo, nova);
+      return nova;
+    });
+  }
+
+  return {
+    itens: sessao.itens,
+    setItens: (itens: ItemCalculo[]) => atualizar({ itens }),
+    precoInput: sessao.precoInput,
+    setPrecoInput: (precoInput: string) => atualizar({ precoInput }),
+    modoReverso: sessao.modoReverso,
+    setModoReverso: (modoReverso: boolean) => atualizar({ modoReverso }),
+    margemAlvoInput: sessao.margemAlvoInput,
+    setMargemAlvoInput: (margemAlvoInput: string) =>
+      atualizar({ margemAlvoInput }),
+    carregado,
   };
 }

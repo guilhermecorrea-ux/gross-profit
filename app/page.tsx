@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useDados } from "@/lib/storage";
+import { useDados, useSessaoCalculo } from "@/lib/storage";
 import { useTema } from "@/lib/tema";
 import { calcular, calcularReverso } from "@/lib/calc";
 import {
@@ -14,7 +14,6 @@ import { corDaMargem } from "@/lib/constants";
 import { archivo } from "@/lib/fonts";
 import { Cabecalho } from "@/components/Cabecalho";
 import { PainelTaxas } from "@/components/PainelTaxas";
-import type { ItemCalculo } from "@/lib/types";
 
 const CORES_BARRA = ["#FBD9C4", "#F5B48C", "#EF8F55", "#ED7032", "#B84C13"];
 
@@ -39,11 +38,18 @@ export default function CalculadoraPage() {
   const canal = canais[0];
   const { dark } = useTema();
 
-  const [itens, setItens] = useState<ItemCalculo[]>([]);
+  const {
+    itens,
+    setItens,
+    precoInput,
+    setPrecoInput,
+    modoReverso,
+    setModoReverso,
+    margemAlvoInput,
+    setMargemAlvoInput,
+    carregado: sessaoCarregada,
+  } = useSessaoCalculo();
   const [busca, setBusca] = useState("");
-  const [precoInput, setPrecoInput] = useState("");
-  const [modoReverso, setModoReverso] = useState(false);
-  const [margemAlvoInput, setMargemAlvoInput] = useState("20");
 
   const produtosAtivos = useMemo(
     () => produtos.filter((p) => p.ativo),
@@ -122,7 +128,7 @@ export default function CalculadoraPage() {
       : 0
     : preco;
 
-  if (!carregado) {
+  if (!carregado || !sessaoCarregada) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F6F4EC] dark:bg-[#14140F]">
         <p className="text-sm text-[#2C2E35]/50 dark:text-[#F2EFE4]/50">
@@ -298,9 +304,9 @@ export default function CalculadoraPage() {
         <div
           role="button"
           tabIndex={0}
-          onClick={() => setModoReverso((v) => !v)}
+          onClick={() => setModoReverso(!modoReverso)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") setModoReverso((v) => !v);
+            if (e.key === "Enter" || e.key === " ") setModoReverso(!modoReverso);
           }}
           className="flex cursor-pointer items-center justify-between"
         >
