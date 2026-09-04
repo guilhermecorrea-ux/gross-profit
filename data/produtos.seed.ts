@@ -10,6 +10,15 @@ const barrinhas: [string, string][] = [
   ["barrinha-choc-50-12un", "Barrinha chocolate 50% 12un"],
 ];
 
+const barrinhasUnitarias: [string, string][] = [
+  ["barrinha-doce-de-leite-amendoas-1un", "Barrinha doce de leite e amêndoas (1 und.)"],
+  ["barrinha-choc-branco-frutas-vermelhas-1un", "Barrinha chocolate branco e frutas vermelhas (1 und.)"],
+  ["barrinha-cookies-cream-1un", "Barrinha cookies & cream (1 und.)"],
+  ["barrinha-avela-trufado-1un", "Barrinha avelã trufado (1 und.)"],
+  ["barrinha-choc-duo-1un", "Barrinha chocolate duo (1 und.)"],
+  ["barrinha-choc-50-1un", "Barrinha chocolate 50% (1 und.)"],
+];
+
 export const produtosSeed: Produto[] = [
   // Pastas 205g
   {
@@ -140,6 +149,17 @@ export const produtosSeed: Produto[] = [
       nome,
       categoria: "barrinha",
       cmv: 58.0,
+      ativo: true,
+      origem: "seed",
+    })
+  ),
+  // Barrinhas de proteína — unitárias, todas R$ 4,84
+  ...barrinhasUnitarias.map(
+    ([id, nome]): Produto => ({
+      id,
+      nome,
+      categoria: "barrinha",
+      cmv: 4.84,
       ativo: true,
       origem: "seed",
     })
