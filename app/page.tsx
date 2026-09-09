@@ -47,6 +47,8 @@ export default function CalculadoraPage() {
     setModoReverso,
     margemAlvoInput,
     setMargemAlvoInput,
+    descontoInput,
+    setDescontoInput,
     carregado: sessaoCarregada,
   } = useSessaoCalculo();
   const { adicionar: adicionarPrecificacao } = usePrecificacoes();
@@ -108,10 +110,15 @@ export default function CalculadoraPage() {
   const preco = precoInput.trim() === "" ? 0 : parseNumeroBR(precoInput);
   const margemAlvo =
     margemAlvoInput.trim() === "" ? 0 : parseNumeroBR(margemAlvoInput) / 100;
+  const desconto =
+    descontoInput.trim() === ""
+      ? 0
+      : Math.min(100, Math.max(0, parseNumeroBR(descontoInput)));
+  const precoComDesconto = preco * (1 - desconto / 100);
 
   const resultadoDireto = useMemo(
-    () => calcular({ preco, itens, taxas: canal.taxas }, produtos),
-    [preco, itens, canal.taxas, produtos]
+    () => calcular({ preco: precoComDesconto, itens, taxas: canal.taxas }, produtos),
+    [precoComDesconto, itens, canal.taxas, produtos]
   );
 
   const resultadoReverso = useMemo(
@@ -128,7 +135,14 @@ export default function CalculadoraPage() {
     ? resultadoReverso.ok
       ? resultadoReverso.precoIdeal
       : 0
-    : preco;
+    : precoComDesconto;
+  // Em modo reverso, o preço sugerido já é o valor líquido (o que o cliente
+  // paga). Se houver desconto, o preço de tabela precisa ser maior, pra que,
+  // depois do cupom, sobre exatamente o líquido que atinge a margem alvo.
+  const precoDeTabelaSugerido =
+    modoReverso && resultadoReverso.ok && desconto > 0
+      ? resultadoReverso.precoIdeal / (1 - desconto / 100)
+      : null;
 
   function salvarEmPrecificacao() {
     if (!resultadoAtivo) return;
@@ -301,6 +315,14 @@ export default function CalculadoraPage() {
               placeholder="0,00"
               className="w-full rounded-[15px] border-2 border-laranja bg-white px-3.5 py-2.5 text-[28px] font-extrabold text-[#2C2E35] outline-none tabular-nums dark:bg-[#1F1F19] dark:text-[#F2EFE4]"
             />
+            {desconto > 0 && (
+              <div className="mt-2 text-sm text-[#2C2E35]/60 dark:text-[#F2EFE4]/60">
+                Preço com desconto:{" "}
+                <strong className="text-[#2C2E35] dark:text-[#F2EFE4]">
+                  {formatarBRL(precoComDesconto)}
+                </strong>
+              </div>
+            )}
           </div>
         ) : (
           <div>
@@ -316,15 +338,37 @@ export default function CalculadoraPage() {
               className="w-full rounded-[15px] border-2 border-laranja bg-white px-3.5 py-2.5 text-[28px] font-extrabold text-[#2C2E35] outline-none tabular-nums dark:bg-[#1F1F19] dark:text-[#F2EFE4]"
             />
             <div className="mt-2 text-sm text-[#2C2E35]/60 dark:text-[#F2EFE4]/60">
-              Preço sugerido:{" "}
+              Preço líquido sugerido:{" "}
               <strong className="text-[#2C2E35] dark:text-[#F2EFE4]">
                 {resultadoReverso.ok
                   ? formatarBRL(resultadoReverso.precoIdeal)
                   : "—"}
               </strong>
             </div>
+            {precoDeTabelaSugerido !== null && (
+              <div className="mt-0.5 text-sm text-[#2C2E35]/60 dark:text-[#F2EFE4]/60">
+                Preço de tabela (antes do desconto):{" "}
+                <strong className="text-[#2C2E35] dark:text-[#F2EFE4]">
+                  {formatarBRL(precoDeTabelaSugerido)}
+                </strong>
+              </div>
+            )}
           </div>
         )}
+
+        <div>
+          <div className="mb-1.5 text-[11px] font-semibold tracking-wide text-[#2C2E35]/50 uppercase dark:text-[#F2EFE4]/50">
+            Desconto do cupom (%)
+          </div>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={descontoInput}
+            onChange={(e) => setDescontoInput(e.target.value)}
+            placeholder="0"
+            className="w-full rounded-[15px] border border-[#2C2E35]/20 bg-white px-3.5 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja dark:border-[#F2EFE4]/20 dark:bg-[#1F1F19] dark:text-[#F2EFE4]"
+          />
+        </div>
 
         <div
           role="button"
