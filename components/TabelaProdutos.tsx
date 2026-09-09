@@ -28,8 +28,8 @@ export function TabelaProdutos({ produtos, onChange }: Props) {
   }
 
   return (
-    <div className="overflow-hidden rounded-[15px] border border-[#2C2E35]/10 dark:border-[#F2EFE4]/10">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto rounded-[15px] border border-[#2C2E35]/10 dark:border-[#F2EFE4]/10">
+      <table className="w-full min-w-[560px] text-sm">
         <thead className="bg-[#2C2E35]/5 text-left text-[11px] tracking-wide text-[#2C2E35]/50 uppercase dark:bg-[#F2EFE4]/5 dark:text-[#F2EFE4]/50">
           <tr>
             <th className="px-3 py-2 font-semibold">Produto</th>

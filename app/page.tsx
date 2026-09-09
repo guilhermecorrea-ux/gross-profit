@@ -49,6 +49,8 @@ export default function CalculadoraPage() {
     setMargemAlvoInput,
     descontoInput,
     setDescontoInput,
+    nomeInput,
+    setNomeInput,
     carregado: sessaoCarregada,
   } = useSessaoCalculo();
   const { adicionar: adicionarPrecificacao } = usePrecificacoes();
@@ -88,12 +90,14 @@ export default function CalculadoraPage() {
   }
 
   function atualizarQuantidade(produtoId: string, quantidade: number) {
-    if (quantidade <= 0) {
-      removerItem(produtoId);
-      return;
-    }
+    // Limpar o campo pra digitar um número novo não pode apagar o produto —
+    // só o botão "×" remove. Quantidade inválida ou zerada volta pra 1.
+    const quantidadeSegura =
+      Number.isFinite(quantidade) && quantidade >= 1 ? quantidade : 1;
     setItens(
-      itens.map((i) => (i.produtoId === produtoId ? { ...i, quantidade } : i))
+      itens.map((i) =>
+        i.produtoId === produtoId ? { ...i, quantidade: quantidadeSegura } : i
+      )
     );
   }
 
@@ -147,10 +151,12 @@ export default function CalculadoraPage() {
   function salvarEmPrecificacao() {
     if (!resultadoAtivo) return;
     const nomeProduto =
+      nomeInput.trim() ||
       itens
         .map((i) => produtoPorId.get(i.produtoId)?.nome)
         .filter((nome): nome is string => Boolean(nome))
-        .join(" + ") || "Sem produto";
+        .join(" + ") ||
+      "Sem produto";
 
     adicionarPrecificacao({
       id: crypto.randomUUID(),
@@ -205,7 +211,7 @@ export default function CalculadoraPage() {
         subtitulo="A vida não para. E a gente também não precisa."
       />
 
-      <div className="flex flex-col gap-7">
+      <div className="flex min-w-0 flex-col gap-7">
         <div>
           <div className="mb-1.5 text-[11px] font-semibold tracking-wide text-[#2C2E35]/50 uppercase dark:text-[#F2EFE4]/50">
             Canal
@@ -400,6 +406,19 @@ export default function CalculadoraPage() {
           onRestaurarPadroes={restaurarPadroes}
         />
 
+        <div>
+          <div className="mb-1.5 text-[11px] font-semibold tracking-wide text-[#2C2E35]/50 uppercase dark:text-[#F2EFE4]/50">
+            Nome para a Precificação
+          </div>
+          <input
+            type="text"
+            value={nomeInput}
+            onChange={(e) => setNomeInput(e.target.value)}
+            placeholder="Ex.: Kit Páscoa"
+            className="w-full rounded-[15px] border border-[#2C2E35]/20 bg-white px-3.5 py-2 text-sm outline-none focus:border-laranja focus:ring-1 focus:ring-laranja dark:border-[#F2EFE4]/20 dark:bg-[#1F1F19] dark:text-[#F2EFE4]"
+          />
+        </div>
+
         <button
           type="button"
           onClick={salvarEmPrecificacao}
@@ -410,7 +429,7 @@ export default function CalculadoraPage() {
         </button>
       </div>
 
-      <div className="flex flex-col gap-10 rounded-[15px] bg-white p-8 dark:bg-[#1F1F19]">
+      <div className="flex min-w-0 flex-col gap-10 rounded-[15px] bg-white p-4 sm:p-8 dark:bg-[#1F1F19]">
         {resultadoAtivo ? (
           <>
             <div>
@@ -420,7 +439,7 @@ export default function CalculadoraPage() {
                 Margem
               </div>
               <div
-                className={`${archivo.className} text-[96px] leading-[0.88] font-black tracking-[-4px] tabular-nums sm:text-[176px] sm:tracking-[-7px] ${COR_MARGEM_TEXTO[corMargem]}`}
+                className={`${archivo.className} text-[56px] leading-[0.88] font-black tracking-[-2px] tabular-nums sm:text-[96px] sm:tracking-[-4px] lg:text-[176px] lg:tracking-[-7px] ${COR_MARGEM_TEXTO[corMargem]}`}
               >
                 {formatarPercentual(resultadoAtivo.margem)}
               </div>

@@ -31,8 +31,8 @@ export function Cabecalho({ titulo, subtitulo }: Props) {
   ];
 
   return (
-    <div className="col-span-full flex items-start justify-between gap-8">
-      <div>
+    <div className="col-span-full flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+      <div className="min-w-0">
         <Marca dark={dark} height={26} className="mb-3.5" />
         <h1
           className={`${archivo.className} text-[32px] font-black leading-none tracking-[-1.2px] text-[#2C2E35] sm:text-[40px] dark:text-[#F2EFE4]`}
@@ -43,8 +43,8 @@ export function Cabecalho({ titulo, subtitulo }: Props) {
           {subtitulo}
         </p>
       </div>
-      <div className="flex flex-col items-end gap-3.5">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col items-start gap-3.5 sm:items-end">
+        <div className="flex flex-wrap items-center gap-2">
           {ABAS.map((aba) => {
             const ativa = pathname === aba.href;
             return (

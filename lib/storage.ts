@@ -183,6 +183,7 @@ type SessaoCalculo = {
   modoReverso: boolean;
   margemAlvoInput: string;
   descontoInput: string;
+  nomeInput: string;
 };
 
 const SESSAO_CALCULO_PADRAO: SessaoCalculo = {
@@ -191,6 +192,7 @@ const SESSAO_CALCULO_PADRAO: SessaoCalculo = {
   modoReverso: false,
   margemAlvoInput: "20",
   descontoInput: "",
+  nomeInput: "",
 };
 
 // Estado de trabalho da calculadora (produtos do kit, preço, modo reverso,
@@ -229,6 +231,8 @@ export function useSessaoCalculo() {
       atualizar({ margemAlvoInput }),
     descontoInput: sessao.descontoInput,
     setDescontoInput: (descontoInput: string) => atualizar({ descontoInput }),
+    nomeInput: sessao.nomeInput,
+    setNomeInput: (nomeInput: string) => atualizar({ nomeInput }),
     carregado,
   };
 }

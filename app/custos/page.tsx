@@ -128,7 +128,7 @@ export default function CustosPage() {
         subtitulo="Catálogo de produtos e taxas padrão por canal."
       />
 
-      <section className="flex flex-col gap-4">
+      <section className="flex min-w-0 flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2
             className={`${archivo.className} text-lg font-extrabold text-[#2C2E35] dark:text-[#F2EFE4]`}

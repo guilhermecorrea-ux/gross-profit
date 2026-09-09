@@ -9,11 +9,12 @@ type TemaContexto = { dark: boolean; alternarTema: () => void };
 const Contexto = createContext<TemaContexto | null>(null);
 
 export function TemaProvider({ children }: { children: React.ReactNode }) {
-  const [dark, setDark] = useState(false);
+  // Padrão é escuro; só muda pra claro se o usuário já tiver escolhido isso antes.
+  const [dark, setDark] = useState(true);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (window.localStorage.getItem(TEMA_STORAGE_KEY) === "dark") setDark(true);
+    if (window.localStorage.getItem(TEMA_STORAGE_KEY) === "light") setDark(false);
   }, []);
 
   function alternarTema() {

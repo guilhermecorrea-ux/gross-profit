@@ -92,7 +92,7 @@ export default function PrecificacaoPage() {
         subtitulo="Histórico dos produtos precificados na calculadora."
       />
 
-      <section className="flex flex-col gap-4">
+      <section className="flex min-w-0 flex-col gap-4">
         <p className="max-w-2xl text-sm text-[#2C2E35]/60 dark:text-[#F2EFE4]/60">
           Cada linha desta tabela é um preço salvo a partir da Calculadora —
           com a margem, o lucro, o markup e a composição de custo completa no
